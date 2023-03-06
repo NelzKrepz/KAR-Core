@@ -14,6 +14,7 @@ module.exports = (Client, Logger) => {
 		let Command = {};
 		Command.args = message.content.slice(prefix.length).trim().split(/ +/g);
 		Command.content = Command.args.shift().toLowerCase();
+		Command.prefix = prefix;
 		try {
 			let f = null;
 			for (var i = 0; i < commands.length; i++) {

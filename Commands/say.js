@@ -1,7 +1,7 @@
 module.exports = {
 	Properties: {
 		description: "Echo message.",
-		usage: '<message> [silent]',
+		usage: ' [silent] <message>',
 		disabled: false,
 		category: "Public"
 	},
@@ -39,7 +39,7 @@ module.exports = {
 			if (Interaction.options.getBoolean('silent')) {
 				Interaction.channel.send(Interaction.options.getString('message', true));
 				Interaction.reply({content:'Success!', ephemeral:true});
-				Interaction.deleteReply();
+				//Interaction.deleteReply();
 			} else
 				Interaction.reply({content:Interaction.options.getString('message', true)});
 		}

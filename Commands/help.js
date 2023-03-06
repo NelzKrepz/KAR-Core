@@ -1,4 +1,5 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
+const fs = require('fs');
 
 module.exports = {
 	Properties: {
@@ -11,9 +12,9 @@ module.exports = {
 		properties: {
 			aliases: ['commands', 'cmds']
 		},
-		execute: ({ Message, Client }) => {
+		execute: ({ Message, Client, Command }) => {
 			let categories = [];
-			let embed = new MessageEmbed();
+			let embed = new EmbedBuilder();
 			embed.setTitle(Client.user.username+' Command List');
 			fs.readdirSync('./Commands/')
 				.filter(file => file.endsWith("js"))
@@ -23,13 +24,27 @@ module.exports = {
 						categories.push({name:fileProperties.category, commands:[]});
 					}
 					categories.find(c=>c.name===fileProperties.category)
-						.commands.push(fileName.replace('.js', ''));
+						.commands.push({
+command: Command.prefix+fileName.replace('.js','')+fileProperties.usage,
+description: fileProperties.description
+});
 				});
-			for (category in categories) {
-				
-			}
+			categories.forEach((category) => {
+				//console.log(category);
+let cmds = '';
+category.commands.forEach((cmd) => {
+	cmds+=`\`${cmd.command}\` ${cmd.description}\n`;
+});
+				embed.addFields([
+					{
+						name: category.name,
+						value: cmds,
+						inline: true
+					}
+				])
+			});
 			
-			Message.channel.send(embed);
+			Message.channel.send({embeds: [embed]});
 		}
 	},
 	SlashCommand: {
@@ -38,7 +53,7 @@ module.exports = {
 			if (Interaction.options.getBoolean('silent')) {
 				Interaction.channel.send(Interaction.options.getString('message', true));
 				Interaction.reply({content:'Success!', ephemeral:true});
-				Interaction.deleteReply();
+				//Interaction.deleteReply();
 			} else
 				Interaction.reply({content:Interaction.options.getString('message', true)});
 		}
