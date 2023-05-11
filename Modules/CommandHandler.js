@@ -82,13 +82,17 @@ module.exports = (Client, Logger) => {
 		// Interaction Event
 		Client.on('interactionCreate', interaction => {
 			if (!interaction.isChatInputCommand()) return;
-
+			let Command = {};
+			Command.prefix = ',';
+			Command.content = interaction.commandName
 			let file = require(`../Commands/${interaction.commandName}.js`);
 
 			try {
-				file.SlashCommand.execute({ Client, Interaction: interaction });
+				file.SlashCommand.execute({ Client, Command, Interaction: interaction });
 			} catch (err) {
 				Logger.error(err);
+			} finally {
+				Logger.log(`${interaction.member.user.tag} runs '/${Command.content}' command in ${interaction.guild.name} at ${interaction.channel.name}`);
 			}
 		});
 	})();

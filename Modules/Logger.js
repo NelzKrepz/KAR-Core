@@ -6,7 +6,7 @@ class Logger {
 	#logFolder = '.logs/';
 	#fileName = 'DD-MM-YYYY HH:mm:ss';
 	#fileExt = '.log';
-	#logFormat = '\\[DD/MM/YYYY - HH:mm:ss \| {cond}\\]:';
+	#logFormat = '\\[DD/MM/YYYY - HH:mm:ss \| [{cond}\]\]:';
 	#created = moment();
 	#file;
 
@@ -30,17 +30,17 @@ class Logger {
 	log(...string) {
 		this.createFile();
 		fs.writeFileSync(this.#logFolder + this.#file, moment().format(this.#logFormat).replace('{cond}', 'LOG') + string.join(' '))
-		console.log(moment().format(this.#logFormat), ...string);
+		console.log(moment().format(this.#logFormat).replace('{cond}', 'LOG'), ...string);
 	}
 	warn(...string) {
 		this.createFile();
 		fs.writeFileSync(this.#logFolder + this.#file, moment().format(this.#logFormat).replace('{cond}', 'WARN') + string.join(' '))
-		console.warn(moment().format(this.#logFormat), ...string);
+		console.warn(moment().format(this.#logFormat).replace('{cond}', 'WARN'), ...string);
 	}
 	error(...string) {
 		this.createFile();
 		fs.writeFileSync(this.#logFolder + this.#file, moment().format(this.#logFormat).replace('{cond}', 'ERROR') + string.join(' '))
-		console.warn(moment().format(this.#logFormat), ...string);
+		console.warn(moment().format(this.#logFormat).replace('{cond}', 'ERROR'), ...string);
 	}
 }
 

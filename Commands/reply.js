@@ -1,13 +1,13 @@
 module.exports = {
 	Properties: {
-		description: "Echo message.",
-		usage: ' [silent] <message>',
-		disabled: false,
+		description: "Replying message as a bot. (WIP)",
+		usage: ' [silent] <messageId> <message>',
+		disabled: true,
 		category: "Public"
 	},
 	RegularCommand: {
 		properties: {
-			aliases: ['echo']
+			aliases: []
 		},
 		execute: ({ Message, Command }) => {
 			let prefix = `[${Message.member.displayName}]: `;
@@ -15,6 +15,12 @@ module.exports = {
 				prefix = '';
 				Command.args.shift();
 			}
+			let msgId=0;
+			if (Message.member.roles.cache.some(role => role.name.toLowerCase().includes('staff'))) {
+				msgId=Command.args.shift();
+				console.log(msgId)
+			}
+			console.log(Message.channel.messages.lastKey(),Message.channel.messages.cache.some(m => parseInt(m.id) == parseInt(msgId)));
 			Message.channel.send(prefix+Command.args.join(' '));
 			Message.delete();
 		}
@@ -36,14 +42,13 @@ module.exports = {
 			]
 		},
 		execute: ({Interaction}) => {
+console.log(Interaction);
 			if (Interaction.options.getBoolean('silent')) {
 				Interaction.channel.send(Interaction.options.getString('message', true));
 				Interaction.reply({content:'Success!', ephemeral:true});
 				//Interaction.deleteReply();
-			} else {
-				let prefix = `[${Interaction.member.displayName}]: `;
-				Interaction.reply({content:prefix+Interaction.options.getString('message', true)});
-			}
+			} else
+				Interaction.reply({content:Interaction.options.getString('message', true)});
 		}
 	}
 }

@@ -15,26 +15,67 @@ module.exports = {
 		execute: ({ Message, Client, Command }) => {
 			let categories = [];
 			let embed = new EmbedBuilder();
-			embed.setTitle(Client.user.username+' Command List');
+			embed.setTitle(Client.user.username + ' Command List');
 			fs.readdirSync('./Commands/')
 				.filter(file => file.endsWith("js"))
 				.forEach((fileName) => {
-					let fileProperties = require('../Commands/'+fileName).Properties;
-					if (!categories.some(c=>c.name===fileProperties.category)) {
-						categories.push({name:fileProperties.category, commands:[]});
+					let fileProperties = require('../Commands/' + fileName).Properties;
+					if (!categories.some(c => c.name === fileProperties.category)) {
+						categories.push({ name: fileProperties.category, commands: [] });
 					}
-					categories.find(c=>c.name===fileProperties.category)
+					categories.find(c => c.name === fileProperties.category)
 						.commands.push({
-command: Command.prefix+fileName.replace('.js','')+fileProperties.usage,
-description: fileProperties.description
-});
+							command: Command.prefix + fileName.replace('.js', '') + fileProperties.usage,
+							description: fileProperties.description,
+							disabled: fileProperties.disabled
+						});
 				});
 			categories.forEach((category) => {
 				//console.log(category);
-let cmds = '';
-category.commands.forEach((cmd) => {
-	cmds+=`\`${cmd.command}\` ${cmd.description}\n`;
-});
+				let cmds = '';
+				category.commands.forEach((cmd) => {
+					let disabled = cmd.disabled ? ' (Disabled)' : ''
+					cmds += `\`${cmd.command}\` ${cmd.description}${disabled}\n`;
+				});
+				embed.addFields([
+					{
+						name: category.name,
+						value: cmds,
+						inline: true
+					}
+				])
+			});
+
+			Message.channel.send({ embeds: [embed] });
+		}
+	},
+	SlashCommand: {
+		properties: {},
+		execute: ({Client, Command, Interaction }) => {
+			let categories = [];
+			let embed = new EmbedBuilder();
+			embed.setTitle(Client.user.username + ' Command List');
+			fs.readdirSync('./Commands/')
+				.filter(file => file.endsWith("js"))
+				.forEach((fileName) => {
+					let fileProperties = require('../Commands/' + fileName).Properties;
+					if (!categories.some(c => c.name === fileProperties.category)) {
+						categories.push({ name: fileProperties.category, commands: [] });
+					}
+					categories.find(c => c.name === fileProperties.category)
+						.commands.push({
+							command: Command.prefix + fileName.replace('.js', '') + fileProperties.usage,
+							description: fileProperties.description,
+							disabled: fileProperties.disabled
+						});
+				});
+			categories.forEach((category) => {
+				//console.log(category);
+				let cmds = '';
+				category.commands.forEach((cmd) => {
+					let disabled = cmd.disabled ? ' (Disabled)' : ''
+					cmds += `\`${cmd.command}\` ${cmd.description}${disabled}\n`;
+				});
 				embed.addFields([
 					{
 						name: category.name,
@@ -44,18 +85,7 @@ category.commands.forEach((cmd) => {
 				])
 			});
 			
-			Message.channel.send({embeds: [embed]});
-		}
-	},
-	SlashCommand: {
-		properties: {},
-		execute: ({Interaction}) => {
-			if (Interaction.options.getBoolean('silent')) {
-				Interaction.channel.send(Interaction.options.getString('message', true));
-				Interaction.reply({content:'Success!', ephemeral:true});
-				//Interaction.deleteReply();
-			} else
-				Interaction.reply({content:Interaction.options.getString('message', true)});
+			Interaction.reply({ embeds: [embed] });
 		}
 	}
 }
