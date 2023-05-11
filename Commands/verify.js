@@ -2,14 +2,14 @@ const API = require('../Modules/API.js')();
 
 module.exports = {
 	Properties: {
-		description: "Echo message.",
+		description: "Verify.",
 		usage: ' [<code>]',
 		disabled: false,
 		category: "Public"
 	},
 	RegularCommand: {
 		properties: {
-			aliases: ['echo']
+			aliases: ['auth']
 		},
 		execute: ({ Message, Command }) => {
 			API.generateAuth()
