@@ -1,3 +1,5 @@
+const API = require('../Modules/API.js')();
+
 module.exports = {
 	Properties: {
 		description: "Echo message.",
@@ -10,6 +12,7 @@ module.exports = {
 			aliases: ['echo']
 		},
 		execute: ({ Message, Command }) => {
+			API.generateAuth()
 			Message.delete();
 		}
 	},
